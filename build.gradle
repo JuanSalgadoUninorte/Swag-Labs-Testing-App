@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.4")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+group 'co.com.choucair.automation.android'
+version '1.0-SNAPSHOT'
+
+ext {
+    serenityVersion = '3.1.0'
+    serenityCucumberVersion = '3.1.0'
+    kotlin_version = '1.6.21'
+}
+
+dependencies {
+    testImplementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-cucumber:${serenityCucumberVersion}"
+    implementation "net.serenity-bdd:serenity-ensure:${serenityVersion}"
+    implementation "net.serenity-bdd:serenity-screenplay-rest:${serenityVersion}"
+    implementation group: 'io.appium', name: 'java-client', version: '6.1.0'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+    implementation group: 'org.json', name: 'json', version: '20190722'
+    implementation group: 'com.konghq', name: 'unirest-java', version: '3.13.6'
+    implementation "net.serenity-bdd:serenity-screenplay-rest:${serenityVersion}"
+    testImplementation "junit:junit:4.12"
+    testImplementation "net.serenity-bdd:serenity-junit:${serenityVersion}"
+    testImplementation "org.assertj:assertj-core:3.8.0"
+    testImplementation "org.slf4j:slf4j-simple:1.7.21"
+}
+
+test {
+    systemProperties System.getProperties()
+    systemProperty "cucumber.options", System.getProperty("cucumber.options")
+}
+
+tasks.withType(Test) {
+    systemProperty "file.encoding", "UTF-8"
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+gradle.startParameter.continueOnFailure = true
+
+test.finalizedBy(aggregate)
+gradle.startParameter.continueOnFailure = true
+gradle.startParameter.refreshDependencies = true
